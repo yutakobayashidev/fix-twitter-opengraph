@@ -27,7 +27,16 @@ DISCORD_BOT_TOKEN=for # Discord BOT Token
 
 ## run
 
+### dev
+
 ```
+pnpm dev
+```
+
+### production
+
+```
+pnpm compile
 pnpm start
 ```
 
