@@ -1,5 +1,5 @@
 {
-  "name": "discord-twitter-link-replace",
+  "name": "fix-twitter-opengraph",
   "scripts": {
     "dev": "tsx src/main.ts",
     "start": "node build/src/main.js",
