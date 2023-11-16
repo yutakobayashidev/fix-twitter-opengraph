@@ -18,7 +18,7 @@ cp .env.example .env
 ```
 
 ```
-DISCORD_BOT_TOKEN=for ## Discord BOT Token
+DISCORD_BOT_TOKEN=for # Discord BOT Token
 ```
 
 ## run
