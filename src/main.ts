@@ -6,7 +6,7 @@ import {
   Partials,
   APIEmbed,
 } from "discord.js";
-import { fetchTweet } from "../lib/fetchTweet";
+import { fetchTweet } from "../lib/fetch";
 import http from "http";
 
 dotenv.config();
@@ -65,6 +65,7 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
       in_reply_to_screen_name,
       in_reply_to_url,
       in_reply_to_status_id_str,
+      og_image_url,
     } = response;
 
     const photoUrls = photos.map((photo) => photo.url);
@@ -95,7 +96,12 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
     const embed: APIEmbed = {
       description,
       color: 0x1da1f2,
-      image: photoUrls.length > 0 ? { url: photoUrls[0] } : undefined,
+      image:
+        photoUrls.length > 0
+          ? { url: photoUrls[0] }
+          : og_image_url
+          ? { url: og_image_url }
+          : undefined,
       author: {
         name: `${user.name} (@${user.screen_name})`,
         url: `https://twitter.com/${user.screen_name}`,

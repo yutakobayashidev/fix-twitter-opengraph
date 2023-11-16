@@ -1,5 +1,6 @@
 import { normalizeText } from "./normalizeText";
 import type { Media, Photo, TweetData, User, Video } from "../types";
+import ogs from "open-graph-scraper";
 
 interface TweetDataSubset {
   text: string;
@@ -11,6 +12,7 @@ interface TweetDataSubset {
   in_reply_to_screen_name?: string;
   in_reply_to_url?: string;
   in_reply_to_status_id_str?: string;
+  og_image_url?: string;
 }
 
 // Originally authored by LFades for react-tweet
@@ -41,10 +43,17 @@ export async function fetchTweet(id: string): Promise<TweetDataSubset> {
     in_reply_to_status_id_str,
   } = data;
 
+  let og_image_url: undefined | string = undefined;
+
   const text = normalizeText(data);
+
+  if (data.entities.urls[0]?.expanded_url) {
+    og_image_url = await getOgImageURL(data.entities.urls[0].expanded_url);
+  }
 
   return {
     text,
+    og_image_url,
     likes: favorite_count,
     user,
     photos: photos ? photos : [],
@@ -56,4 +65,14 @@ export async function fetchTweet(id: string): Promise<TweetDataSubset> {
       ? getInReplyToUrl(data)
       : undefined,
   };
+}
+
+export async function getOgImageURL(url: string) {
+  const data = await ogs({ url });
+
+  if (data.result?.ogImage && data.result.ogImage.length > 0) {
+    return data.result.ogImage[0].url;
+  } else {
+    return undefined;
+  }
 }
