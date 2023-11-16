@@ -13,7 +13,7 @@ https://discord.com/api/oauth2/authorize?client_id=1174659737153982535&permissio
 - Like! Show the number of
 - View original post and link to reply
 - Image display
-- Show OG Image of the link in the tweet
+- Display OG images of URL destinations included in tweets
 
 ## environment variables
 
