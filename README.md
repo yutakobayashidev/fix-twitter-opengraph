@@ -1,8 +1,25 @@
-# discord-twitter-link-replace
+# fix-twitter-opengraph
 
-ツイートの URL を twitter-og.com に書き換えるのも面倒な人向けの OG 表示を修正する Discord BOT。
+Discord BOT to fix Twitter's OpenGraph that appears when sending URLs containing x.com or twitter.com.
 
-![Next I’m buying Coca-Cola to put the cocaine back in](https://cdn.discordapp.com/attachments/1010565995338928319/1174690131534417940/screenshots_2023-11-16_21.39.08.jpg?ex=65688270&is=65560d70&hm=ae3744bde6125a6f81327c797e5d71c85da072d411e4394c04d8c12ebe6a8787&)
+![the student ran an account noting events with free food at the university, but is facing punishment from the university after he allegedely advertised a private event and took food from it, though his lawyers dispute some details.](https://github.com/yutakobayashidev/fix-twitter-opengraph/assets/91340399/e5710e1e-add6-42b5-9be1-341a4154e34a)
+
+## feature
+
+- Like! Show the number of
+- View original post and link to reply
+- Image display
+- Show OG Image of the link in the tweet
+
+## environment variables
+
+```
+cp .env.example .env
+```
+
+```
+DISCORD_BOT_TOKEN=for ## Discord BOT Token
+```
 
 ## run
 
