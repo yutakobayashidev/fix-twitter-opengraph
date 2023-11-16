@@ -51,7 +51,7 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
     )
   );
 
-  const embeds = responses.flatMap((response) => {
+  const embedPromises = responses.map(async (response) => {
     if (!response) {
       return [];
     }
@@ -70,9 +70,27 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
     const photoUrls = photos.map((photo) => photo.url);
     if (video) photoUrls.unshift(video.poster);
 
-    const description = in_reply_to_status_id_str
-      ? `[Replying to @${in_reply_to_screen_name}](${in_reply_to_url})\n\n${text}`
-      : text;
+    let replyTweetText = "";
+
+    if (in_reply_to_status_id_str) {
+      const replyTweet = await fetchTweet(in_reply_to_status_id_str).catch(
+        (error) => {
+          console.error("Error fetching reply tweet:", error);
+          return null;
+        }
+      );
+
+      if (replyTweet) {
+        // Split the reply tweet text into lines and prefix each line with '>'
+        const quotedReply = replyTweet.text
+          .split("\n")
+          .map((line) => `> ${line}`)
+          .join("\n");
+
+        replyTweetText = `${quotedReply}\n\n[Replying to @${in_reply_to_screen_name}](${in_reply_to_url})\n\n`;
+      }
+    }
+    const description = replyTweetText + text;
 
     const embed: APIEmbed = {
       description,
@@ -100,10 +118,11 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
       ];
     }
 
-    return embed;
+    return [embed];
   });
 
-  return embeds;
+  const resolvedEmbeds = await Promise.all(embedPromises);
+  return resolvedEmbeds.flat();
 };
 
 client.on(Events.MessageCreate, async (message) => {
