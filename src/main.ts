@@ -79,12 +79,12 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
     const photoUrls = photos.map((photo) => photo.url);
     if (video) photoUrls.unshift(video.poster);
 
-    let replyTweetText = "";
+    let description = "";
 
     if (quoted_tweet) {
       const quoted_tweet_text = format_quoted(quoted_tweet.text);
 
-      replyTweetText = `${text}\n\nn[Replying to @${in_reply_to_screen_name}](${in_reply_to_url})\n\n${quoted_tweet_text}`;
+      description = `${text}\n\nn[Replying to @${in_reply_to_screen_name}](${in_reply_to_url})\n\n${quoted_tweet_text}`;
     }
 
     if (in_reply_to_status_id_str) {
@@ -98,12 +98,12 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
       if (replyTweet) {
         const quotedReply = format_quoted(replyTweet.text);
 
-        replyTweetText = `${quotedReply}\n\n[Replying to @${in_reply_to_screen_name}](${in_reply_to_url})\n\n${text}`;
+        description = `${quotedReply}\n\n[Replying to @${in_reply_to_screen_name}](${in_reply_to_url})\n\n${text}`;
       }
     }
 
     const embed: APIEmbed = {
-      description: replyTweetText,
+      description,
       color: 0x1da1f2,
       image:
         photoUrls.length > 0
