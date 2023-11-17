@@ -1,5 +1,12 @@
 import { normalizeText } from "./normalizeText";
-import type { Media, Photo, TweetData, User, Video } from "../types";
+import type {
+  Media,
+  Photo,
+  TweetData,
+  User,
+  Video,
+  QuotedTweet,
+} from "../types";
 import ogs from "open-graph-scraper";
 
 interface TweetDataSubset {
@@ -12,6 +19,7 @@ interface TweetDataSubset {
   in_reply_to_screen_name?: string;
   in_reply_to_url?: string;
   in_reply_to_status_id_str?: string;
+  quoted_tweet?: QuotedTweet;
   og_image_url?: string;
 }
 
@@ -41,6 +49,7 @@ export async function fetchTweet(id: string): Promise<TweetDataSubset> {
     favorite_count,
     in_reply_to_screen_name,
     in_reply_to_status_id_str,
+    quoted_tweet,
   } = data;
 
   let og_image_url: undefined | string = undefined;
@@ -58,6 +67,7 @@ export async function fetchTweet(id: string): Promise<TweetDataSubset> {
     user,
     photos: photos ? photos : [],
     video,
+    quoted_tweet,
     media: entities.media,
     in_reply_to_screen_name,
     in_reply_to_status_id_str,

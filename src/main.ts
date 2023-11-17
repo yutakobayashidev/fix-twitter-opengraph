@@ -29,6 +29,13 @@ const client = new Client({
   partials: [Partials.Message, Partials.Channel],
 });
 
+export const format_quoted = (text: string) => {
+  return text
+    .split("\n")
+    .map((line) => `> ${line}`)
+    .join("\n");
+};
+
 export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
   const TwitterOrXlinks = content.matchAll(
     /https?:\/\/(?:www\.)?(?:x|twitter)\.com\/[^/]+\/status\/(?<id>\d+)/g
@@ -66,12 +73,19 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
       in_reply_to_url,
       in_reply_to_status_id_str,
       og_image_url,
+      quoted_tweet,
     } = response;
 
     const photoUrls = photos.map((photo) => photo.url);
     if (video) photoUrls.unshift(video.poster);
 
     let replyTweetText = "";
+
+    if (quoted_tweet) {
+      const quoted_tweet_text = format_quoted(quoted_tweet.text);
+
+      replyTweetText = `${text}\n\nn[Replying to @${in_reply_to_screen_name}](${in_reply_to_url})\n\n${quoted_tweet_text}`;
+    }
 
     if (in_reply_to_status_id_str) {
       const replyTweet = await fetchTweet(in_reply_to_status_id_str).catch(
@@ -82,19 +96,14 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
       );
 
       if (replyTweet) {
-        // Split the reply tweet text into lines and prefix each line with '>'
-        const quotedReply = replyTweet.text
-          .split("\n")
-          .map((line) => `> ${line}`)
-          .join("\n");
+        const quotedReply = format_quoted(replyTweet.text);
 
-        replyTweetText = `${quotedReply}\n\n[Replying to @${in_reply_to_screen_name}](${in_reply_to_url})\n\n`;
+        replyTweetText = `${quotedReply}\n\n[Replying to @${in_reply_to_screen_name}](${in_reply_to_url})\n\n${text}`;
       }
     }
-    const description = replyTweetText + text;
 
     const embed: APIEmbed = {
-      description,
+      description: replyTweetText,
       color: 0x1da1f2,
       image:
         photoUrls.length > 0

@@ -2,6 +2,7 @@ type Indices = [number, number];
 
 export interface TweetData {
   __typename: "Tweet";
+  quoted_tweet?: QuotedTweet;
   lang: "en";
   in_reply_to_screen_name?: string;
   in_reply_to_status_id_str?: string;
@@ -15,13 +16,23 @@ export interface TweetData {
   text: string;
   user: User;
   edit_control: EditControl;
-  mediaDetails: MediaDetails[];
+  mediaDetails?: MediaDetails[];
   photos: Photo[];
   video: Video;
   conversation_count: number;
   news_action_type: string;
   isEdited: boolean;
   isStaleEdit: boolean;
+}
+
+export interface QuotedTweet extends TweetData {
+  reply_count: number;
+  retweet_count: number;
+  favorite_count: number;
+  mediaDetails?: MediaDetails[];
+  self_thread: {
+    id_str: string;
+  };
 }
 
 export interface Photo {
