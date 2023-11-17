@@ -134,7 +134,7 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
 client.on(Events.MessageCreate, async (message) => {
   const embeds = await createEmbeds(message.content);
   if (embeds.length > 0) {
-    await message.channel.send({ embeds });
+    await message.channel.send({ embeds, flags: [4096] });
   }
 });
 
