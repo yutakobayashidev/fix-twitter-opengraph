@@ -10,17 +10,20 @@ import type {
 import ogs from "open-graph-scraper";
 
 interface TweetDataSubset {
+  id: string;
   text: string;
   user: User;
   photos: Photo[];
   video: Video | undefined;
   media: Media[] | undefined;
   likes: number;
+  replies: number;
   in_reply_to_screen_name?: string;
   in_reply_to_url?: string;
   in_reply_to_status_id_str?: string;
   quoted_tweet?: QuotedTweet;
   og_image_url?: string;
+  created_at: string;
 }
 
 // Originally authored by LFades for react-tweet
@@ -42,13 +45,16 @@ export async function fetchTweet(id: string): Promise<TweetDataSubset> {
   const data: TweetData = await res.json();
 
   const {
+    id_str,
     user,
     photos,
     video,
     entities,
     favorite_count,
+    conversation_count,
     in_reply_to_screen_name,
     in_reply_to_status_id_str,
+    created_at,
     quoted_tweet,
   } = data;
 
@@ -57,13 +63,19 @@ export async function fetchTweet(id: string): Promise<TweetDataSubset> {
   const text = normalizeText(data);
 
   if (data.entities.urls[0]?.expanded_url) {
-    og_image_url = await getOgImageURL(data.entities.urls[0].expanded_url);
+    try {
+      og_image_url = await getOgImageURL(data.entities.urls[0].expanded_url);
+    } catch (e) {
+      // console.error(e);
+    }
   }
 
   return {
+    id: id_str,
     text,
     og_image_url,
     likes: favorite_count,
+    replies: conversation_count,
     user,
     photos: photos ? photos : [],
     video,
@@ -74,6 +86,7 @@ export async function fetchTweet(id: string): Promise<TweetDataSubset> {
     in_reply_to_url: data.in_reply_to_screen_name
       ? getInReplyToUrl(data)
       : undefined,
+    created_at: new Date(created_at).toISOString(),
   };
 }
 
