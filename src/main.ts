@@ -41,9 +41,10 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
     /https?:\/\/(?:www\.)?(?:x|twitter)\.com\/[^/]+\/status\/(?<id>\d+)/g
   );
 
+  // idがない場合や10個より多い場合は無視する
   const ids = Array.from(TwitterOrXlinks, (match) => match.groups?.id).filter(
     (id) => id !== undefined
-  ) as string[];
+  ).filter((_, _i) => _i <= 9) as string[];
 
   if (ids.length === 0) {
     return [];
