@@ -109,8 +109,8 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
         photoUrls.length > 0
           ? { url: photoUrls[0] }
           : og_image_url
-          ? { url: og_image_url }
-          : undefined,
+            ? { url: og_image_url }
+            : undefined,
       author: {
         name: `${user.name} (@${user.screen_name})`,
         url: `https://twitter.com/${user.screen_name}`,
@@ -143,7 +143,7 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
 client.on(Events.MessageCreate, async (message) => {
   const embeds = await createEmbeds(message.content);
   if (embeds.length > 0) {
-    await message.channel.send({ embeds, flags: [4096] });
+    await message.reply({ embeds, allowedMentions: { repliedUser: false }, flags: [4096] });
   }
 });
 
