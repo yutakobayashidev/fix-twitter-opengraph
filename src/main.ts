@@ -41,7 +41,7 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
     /https?:\/\/(?:www\.)?(?:x|twitter)\.com\/[^/]+\/status\/(?<id>\d+)/g
   );
 
-  // idがない場合や10個より多い場合は無視する
+  // Ignore if no id or more than 10
   const ids = Array.from(TwitterOrXlinks, (match) => match.groups?.id).filter(
     (id) => id !== undefined
   ).filter((_, _i) => _i <= 9) as string[];
@@ -65,27 +65,30 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
     }
 
     const {
+      id,
       text,
       user,
       photos,
       video,
       likes,
+      replies,
       in_reply_to_screen_name,
       in_reply_to_url,
       in_reply_to_status_id_str,
       og_image_url,
       quoted_tweet,
+      created_at
     } = response;
 
     const photoUrls = photos.map((photo) => photo.url);
     if (video) photoUrls.unshift(video.poster);
 
-    let description = "";
+    let description = text;
 
     if (quoted_tweet) {
       const quoted_tweet_text = format_quoted(quoted_tweet.text);
 
-      description = `${text}\n\nn[Replying to @${in_reply_to_screen_name}](${in_reply_to_url})\n\n${quoted_tweet_text}`;
+      description = `${text}\n\n[Replying to @${quoted_tweet.user.screen_name}](https://twitter.com/${quoted_tweet.user.screen_name}/status/${quoted_tweet.id_str})\n\n${quoted_tweet_text}`;
     }
 
     if (in_reply_to_status_id_str) {
@@ -120,15 +123,36 @@ export const createEmbeds = async (content: string): Promise<APIEmbed[]> => {
       footer: {
         icon_url:
           "https://about.twitter.com/content/dam/about-twitter/x/brand-toolkit/logo-black.png.twimg.1920.png",
-        text: "X",
+        text: "X (Twitter)"
       },
+      timestamp: created_at,
     };
+
+    embed.fields = [
+      {
+        name: "𝕏",
+        value: `[Open in X](https://twitter.com/${user.screen_name}/status/${id})`,
+        inline: true,
+      },
+    ];
 
     if (likes > 0) {
       embed.fields = [
+        ...embed.fields ?? [],
         {
-          name: "Likes",
+          name: "♥️",
           value: likes.toLocaleString(),
+          inline: true,
+        },
+      ];
+    }
+
+    if (replies > 0) {
+      embed.fields = [
+        ...embed.fields ?? [],
+        {
+          name: "💬",
+          value: replies.toLocaleString(),
           inline: true,
         },
       ];
