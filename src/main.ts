@@ -180,3 +180,11 @@ client.once(Events.ClientReady, () => {
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
+
+process.on('uncaughtException', (error: Error) => {
+  console.error('未処理の例外が発生しました:', error);
+});
+
+process.on('unhandledRejection', (reason: {} | null | undefined, promise: Promise<any>) => {
+  console.error('未処理のプロミス拒否が発生しました:', promise, '理由:', reason);
+});
