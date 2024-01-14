@@ -8,6 +8,7 @@ import type {
   QuotedTweet,
 } from "../types";
 import ogs from "open-graph-scraper";
+import { mergeUrls } from "./mergeUrls";
 
 interface TweetDataSubset {
   id: string;
@@ -65,6 +66,12 @@ export async function fetchTweet(id: string): Promise<TweetDataSubset> {
   if (data.entities.urls[0]?.expanded_url) {
     try {
       og_image_url = await getOgImageURL(data.entities.urls[0].expanded_url);
+
+      if (og_image_url) {
+        // Handling of OGP paths when they are relative paths
+        og_image_url = mergeUrls(data.entities.urls[0].expanded_url, og_image_url);
+      }
+
     } catch (e) {
       // console.error(e);
     }
